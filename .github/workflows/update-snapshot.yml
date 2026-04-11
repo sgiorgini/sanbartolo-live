@@ -19,12 +19,13 @@ jobs:
         run: |
           mkdir -p live
           curl -fsSL "http://44.3.44.133/webcapture.jpg?command=snap&channel=1" -o live/latest.jpg
+          cp live/latest.jpg latest.jpg
 
       - name: Commit changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add live/latest.jpg
+          git add live/latest.jpg latest.jpg
           if git diff --cached --quiet; then
             echo "No snapshot changes"
             exit 0

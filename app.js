@@ -5,7 +5,7 @@ function refreshImage() {
     return;
   }
 
-  liveImage.src = `live/latest.jpg?ts=${Date.now()}`;
+  liveImage.src = `latest.jpg?ts=${Date.now()}`;
 }
 
 refreshImage();

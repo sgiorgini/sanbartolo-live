@@ -12,6 +12,7 @@ const query = new URLSearchParams(window.location.search);
 const isLocalHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
 const defaultLocalHls = 'http://localhost:8888/cam1/index.m3u8';
 const defaultLocalSnapshot = 'http://44.3.44.133/webcapture.jpg?command=snap&channel=1';
+const defaultPublicSnapshot = 'http://44.3.44.133/webcapture.jpg?command=snap&channel=1';
 
 const streamUrl =
   query.get('hls') ||
@@ -21,7 +22,7 @@ const streamUrl =
 const snapshotUrl =
   query.get('snapshot') ||
   (window.LIVE_CONFIG && window.LIVE_CONFIG.snapshot) ||
-  (isLocalHost ? defaultLocalSnapshot : '');
+  (isLocalHost ? defaultLocalSnapshot : defaultPublicSnapshot);
 let hlsInstance;
 let snapshotTimer;
 
@@ -81,8 +82,8 @@ function setLiveUi(state, message) {
   if (liveDvrFrame) {
     liveDvrFrame.style.display = 'none';
   }
-  livePill.textContent = 'Offline tecnico';
-  liveTitle.textContent = 'Player live in attesa di sorgente compatibile';
+  livePill.textContent = 'Aggiornamento automatico';
+  liveTitle.textContent = 'Vista live della telecamera';
   liveMessage.textContent = message;
 }
 
@@ -142,7 +143,7 @@ async function refreshLiveState() {
   if (!streamUrl && !snapshotUrl) {
     setLiveUi(
       'offline',
-      'Nessun endpoint live configurato per il dominio pubblico. Usa parametri URL ?hls=... e/o ?snapshot=...'
+      'La sorgente live non e configurata.'
     );
     return;
   }
@@ -150,7 +151,7 @@ async function refreshLiveState() {
   const available = await streamReachable();
   if (!available) {
     if (snapshotUrl) {
-      setLiveUi('offline', 'Video HLS non disponibile. Mostro snapshot aggiornato della telecamera ogni 3 secondi.');
+      setLiveUi('offline', 'Immagine live aggiornata automaticamente ogni 3 secondi.');
       refreshSnapshot();
       if (!snapshotTimer) {
         snapshotTimer = setInterval(refreshSnapshot, 3000);

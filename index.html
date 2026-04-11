@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>San Bartolo Live</title>
+  <meta name="description" content="Blog locale con sezione live camera e aggiornamenti dal territorio." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;700&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="page-shell">
+    <header class="site-header">
+      <div class="brand-lockup">
+        <span class="brand-mark">SB</span>
+        <div>
+          <p class="eyebrow">Blog territoriale</p>
+          <h1>San Bartolo Live</h1>
+        </div>
+      </div>
+      <nav class="site-nav">
+        <a href="#live">Live</a>
+        <a href="#storie">Storie</a>
+        <a href="#note">Note</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero-card">
+        <div class="hero-copy">
+          <p class="eyebrow">Panorami, aggiornamenti, osservazioni</p>
+          <h2>Un blog essenziale con una finestra aperta sul paesaggio.</h2>
+          <p class="hero-text">
+            Questa base e pronta per pubblicare articoli, aggiornamenti locali e una sezione dedicata alla
+            videocamera live. Per ora la sorgente video standard non e ancora disponibile, ma il layout e gia pronto.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#live">Apri la sezione live</a>
+            <a class="button button-secondary" href="#storie">Leggi gli articoli</a>
+          </div>
+        </div>
+        <div class="hero-panel">
+          <div class="signal-card">
+            <span class="signal-label">Stato stream</span>
+            <strong>In configurazione</strong>
+            <p>Il DVR mostra il video tramite plugin proprietario. Qui comparira il player web standard appena disponibile.</p>
+          </div>
+          <div class="stats-grid">
+            <div>
+              <span>Formato atteso</span>
+              <strong>HLS o WebRTC</strong>
+            </div>
+            <div>
+              <span>Stato attuale</span>
+              <strong>Plugin vendor</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="live" class="live-section">
+        <div class="section-heading">
+          <p class="eyebrow">Live camera</p>
+          <h3>Spazio pronto per il flusso della telecamera</h3>
+        </div>
+
+        <div class="live-grid">
+          <article class="live-player-card">
+            <div class="live-player-placeholder" id="live-shell">
+              <video id="live-video" class="live-player-video" controls muted playsinline></video>
+              <img id="live-snapshot" class="live-snapshot" alt="Snapshot live telecamera" />
+              <iframe id="live-dvr-frame" class="live-dvr-frame" src="http://44.3.44.133" title="Live DVR" loading="lazy"></iframe>
+              <div class="glow"></div>
+              <div class="placeholder-copy" id="live-overlay">
+                <span class="status-pill" id="live-pill">Offline tecnico</span>
+                <h4 id="live-title">Player live in attesa di sorgente compatibile</h4>
+                <p>
+                  <span id="live-message">Quando avrai un flusso HLS o WebRTC, questo riquadro potra ospitare il player video del blog.</span>
+                </p>
+                <div class="live-actions" id="live-actions">
+                  <a class="button button-primary" href="http://44.3.44.133" target="_blank" rel="noopener noreferrer">Apri live DVR</a>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <aside class="live-info-card">
+            <h4>Come attivarlo</h4>
+            <ol>
+              <li>Recuperare uno stream standard dal DVR o dalla camera.</li>
+              <li>Convertirlo in HLS o WebRTC.</li>
+              <li>Inserire il link del player in questo sito.</li>
+            </ol>
+            <div class="embed-box">
+              <span class="embed-label">Punto di inserimento futuro</span>
+              <code>&lt;video controls src="live.m3u8"&gt;&lt;/video&gt;</code>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="storie" class="stories-section">
+        <div class="section-heading">
+          <p class="eyebrow">Ultime storie</p>
+          <h3>Tre blocchi editoriali gia pronti</h3>
+        </div>
+
+        <div class="story-grid">
+          <article class="story-card accent-amber">
+            <p class="story-meta">Osservatorio</p>
+            <h4>Luce del mattino sulla vallata</h4>
+            <p>Uno spazio per aggiornamenti veloci, meteo locale, visibilita e cambi di stagione.</p>
+            <button class="story-link" type="button" data-story="mattino">Apri nota</button>
+          </article>
+
+          <article class="story-card accent-teal">
+            <p class="story-meta">Tecnica</p>
+            <h4>Diario della telecamera live</h4>
+            <p>Una sezione per annotare prove RTSP, plugin, compatibilita browser e stato del feed.</p>
+            <button class="story-link" type="button" data-story="tecnica">Apri nota</button>
+          </article>
+
+          <article class="story-card accent-coral">
+            <p class="story-meta">Territorio</p>
+            <h4>Eventi e movimento sul paesaggio</h4>
+            <p>Perfetto per piccoli articoli su giornate limpide, neve, vento, tramonti e attivita locali.</p>
+            <button class="story-link" type="button" data-story="territorio">Apri nota</button>
+          </article>
+        </div>
+      </section>
+
+      <section id="note" class="notes-section">
+        <div class="section-heading">
+          <p class="eyebrow">Blocco dinamico</p>
+          <h3>Area note rapida</h3>
+        </div>
+        <div class="notes-card">
+          <h4 id="note-title">Seleziona una storia</h4>
+          <p id="note-body">Clicca su uno dei pulsanti sopra per cambiare il testo dimostrativo senza ricaricare la pagina.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.17/dist/hls.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

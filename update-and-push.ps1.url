@@ -1,0 +1,59 @@
+
+param(
+  [int]$IntervalSeconds = 300
+)
+
+$repoPath = "C:\Users\sgior\Desktop\sanbartolo-live"
+$cameraUrl = "http://44.3.44.133/webcapture.jpg?command=snap&channel=1"
+
+cd $repoPath
+
+Write-Host "Avvio aggiornamento ogni $IntervalSeconds secondi..."
+
+while ($true) {
+
+  try {
+    $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
+    $filename = "snapshot-$timestamp.jpg"
+    $livePath = "live/$filename"
+
+    Write-Host "Scarico snapshot..."
+
+    Invoke-WebRequest $cameraUrl -OutFile $livePath -UseBasicParsing
+
+    if (!(Test-Path $livePath)) {
+      Write-Host "Download fallito"
+      Start-Sleep -Seconds $IntervalSeconds
+      continue
+    }
+
+    # aggiorna latest.jpg (fallback)
+    Copy-Item $livePath "latest.jpg" -Force
+
+    # crea status.json
+    $status = @{
+      latest = $filename
+      time = (Get-Date).ToString("o")
+    } | ConvertTo-Json
+
+    $status | Out-File "status.json" -Encoding utf8
+
+    # git
+    git add $livePath latest.jpg status.json
+
+    $changes = git diff --cached --name-only
+
+    if ($changes) {
+      git commit -m "Update snapshot $timestamp"
+      git push origin main
+      Write-Host "Push OK: $filename"
+    } else {
+      Write-Host "Nessuna modifica"
+    }
+
+  } catch {
+    Write-Host "Errore: $_"
+  }
+
+  Start-Sleep -Seconds $IntervalSeconds
+}

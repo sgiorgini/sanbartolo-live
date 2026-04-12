@@ -9,8 +9,37 @@
 </head>
 <body>
   <main class="live-page">
-    <img id="live-image" class="live-image" src="latest.jpg" alt="Vista live San Bartolo" />
+    <header class="overlay top-bar">
+      <div>
+        <h1 class="title">San Bartolo Live</h1>
+        <p class="subtitle">Vista aggiornata automaticamente</p>
+      </div>
+
+      <div class="status-group">
+        <span id="status-badge" class="status-badge status-loading">Caricamento...</span>
+        <button id="refresh-button" class="refresh-button" type="button">Aggiorna ora</button>
+      </div>
+    </header>
+
+    <img
+      id="live-image"
+      class="live-image"
+      src="latest.jpg"
+      alt="Vista live San Bartolo"
+    />
+
+    <footer class="overlay bottom-bar">
+      <div class="info-row">
+        <span class="label">Ultimo aggiornamento:</span>
+        <span id="last-update">--:--:--</span>
+      </div>
+      <div class="info-row">
+        <span class="label">Controllo immagine:</span>
+        <span id="image-state">In attesa del primo caricamento</span>
+      </div>
+    </footer>
   </main>
-  <script src="app.js?v=20260412-1"></script>
+
+  <script src="app.js?v=20260412-2"></script>
 </body>
 </html>

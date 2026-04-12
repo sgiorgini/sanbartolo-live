@@ -1,0 +1,57 @@
+Resoconto attivita - 2026-04-12 (aggiornato)
+
+Progetto:
+- Repository: https://github.com/sgiorgini/sanbartolo-live
+- Cartella locale: C:\Users\sgior\Desktop\sanbartolo-live
+
+Sintesi esiti:
+- Locale: aggiornamento immagine funzionante.
+- Web: aggiornamento ripristinato con doppia strategia (workflow robusto + updater locale con push).
+
+Cosa e' stato fatto:
+1) Ripartenza ambiente locale
+- Clonato/aggiornato il repository in locale.
+- Avviato server locale su porta 8080.
+- Verificata risposta HTTP 200.
+
+2) Allineamento storico richiesto
+- Checkout temporaneo del commit: 289d83b589216d8308e44ff66ed94cc232543acf.
+- Successivo rientro su branch main per pubblicazione stabile.
+
+3) Correzioni parte web (GitHub Pages)
+- Corretto path immagine in app.js per evitare riferimento errato alla root dominio.
+- Aggiunto cache-busting nello script caricato da index.html.
+- Aggiunto fallback robusto nel JS per risoluzione sorgente immagine.
+
+4) Diagnosi problema "web non si aggiorna"
+- Individuato fallimento del workflow GitHub Actions "Update live snapshot" nello step download.
+- Confermato che la sorgente camera non e' sempre raggiungibile dal runner GitHub.
+
+5) Nuova configurazione affidabile
+- Workflow aggiornato in .github/workflows/update-snapshot.yml con:
+  - retry su curl
+  - timeout espliciti
+  - warning e skip commit se sorgente non raggiungibile
+- Creato script locale update-and-push.ps1:
+  - scarica snapshot
+  - confronta hash
+  - aggiorna latest.jpg e live/latest.jpg
+  - commit+push automatico solo se immagine cambiata
+- Creato avvio rapido avvia-update-web.bat (doppio click).
+
+6) Pubblicazione e verifica
+- Commit/push applicati su main.
+- Verificati commit remoti snapshot e headers immagine pubblica.
+- URL pubblico: https://sgiorgini.github.io/sanbartolo-live/
+
+File nuovi/aggiornati principali:
+- .github/workflows/update-snapshot.yml
+- update-and-push.ps1
+- avvia-update-web.bat
+- app.js
+- index.html
+
+Stato finale operativo:
+- Se update-and-push.ps1 e' in esecuzione, il web si aggiorna ogni 5 minuti.
+- Il workflow GitHub resta attivo come canale aggiuntivo (con gestione errore migliorata).
+- In caso di cache browser: usare refresh forzato o query ?v=...

@@ -7,17 +7,20 @@ param(
 $ErrorActionPreference = "Stop"
 Set-Location $PSScriptRoot
 
-$escapedScriptPath = [Regex]::Escape((Join-Path $PSScriptRoot "update-and-push.ps1"))
-$otherProcesses = Get-CimInstance Win32_Process | Where-Object {
-  $_.Name -eq "powershell.exe" -and
-  $_.ProcessId -ne $PID -and
-  $_.CommandLine -match $escapedScriptPath
-}
+$lockFilePath = Join-Path $PSScriptRoot "live/.update-and-push.lock"
+$lockStream = $null
 
-if ($otherProcesses -and -not $RunOnce) {
-  $otherProcessIds = ($otherProcesses | Select-Object -ExpandProperty ProcessId) -join ", "
-  Write-Warning "Updater gia' attivo. PID: $otherProcessIds"
-  exit 1
+if (-not $RunOnce) {
+  try {
+    if (!(Test-Path "live")) {
+      New-Item -ItemType Directory -Path "live" | Out-Null
+    }
+    $lockStream = [System.IO.File]::Open($lockFilePath, [System.IO.FileMode]::OpenOrCreate, [System.IO.FileAccess]::ReadWrite, [System.IO.FileShare]::None)
+  }
+  catch {
+    Write-Warning "Updater gia' attivo (lock file in uso): $lockFilePath"
+    exit 1
+  }
 }
 
 if (!(Test-Path "live")) {
@@ -28,8 +31,9 @@ Write-Host "Avvio update+push ogni $IntervalSeconds secondi"
 Write-Host "Repo: $PSScriptRoot"
 
 $keepRunning = $true
-while ($keepRunning) {
-  try {
+try {
+  while ($keepRunning) {
+    try {
     $tmpFile = Join-Path $PSScriptRoot ("live/latest.{0}.new.jpg" -f $PID)
 
     if (Test-Path $tmpFile) {
@@ -64,7 +68,15 @@ while ($keepRunning) {
 
         git push origin main | Out-Null
         if ($LASTEXITCODE -ne 0) {
-          throw "Push git fallito"
+          git pull --rebase origin main | Out-Null
+          if ($LASTEXITCODE -ne 0) {
+            throw "Rebase fallito dopo push"
+          }
+
+          git push origin main | Out-Null
+          if ($LASTEXITCODE -ne 0) {
+            throw "Push git fallito"
+          }
         }
 
         Write-Host "[$ts] PUSH OK - snapshot aggiornato"
@@ -75,16 +87,22 @@ while ($keepRunning) {
       $ts = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
       Write-Host "[$ts] Nessuna variazione immagine"
     }
-  }
-  catch {
-    $ts = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-    Write-Warning "[$ts] Errore update+push: $($_.Exception.Message)"
-  }
+    }
+    catch {
+      $ts = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+      Write-Warning "[$ts] Errore update+push: $($_.Exception.Message)"
+    }
 
-  if ($RunOnce) {
-    $keepRunning = $false
+    if ($RunOnce) {
+      $keepRunning = $false
+    }
+    else {
+      Start-Sleep -Seconds $IntervalSeconds
+    }
   }
-  else {
-    Start-Sleep -Seconds $IntervalSeconds
+}
+finally {
+  if ($lockStream -ne $null) {
+    $lockStream.Dispose()
   }
 }

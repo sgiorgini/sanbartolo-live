@@ -7,6 +7,19 @@ param(
 $ErrorActionPreference = "Stop"
 Set-Location $PSScriptRoot
 
+$escapedScriptPath = [Regex]::Escape((Join-Path $PSScriptRoot "update-and-push.ps1"))
+$otherProcesses = Get-CimInstance Win32_Process | Where-Object {
+  $_.Name -eq "powershell.exe" -and
+  $_.ProcessId -ne $PID -and
+  $_.CommandLine -match $escapedScriptPath
+}
+
+if ($otherProcesses -and -not $RunOnce) {
+  $otherProcessIds = ($otherProcesses | Select-Object -ExpandProperty ProcessId) -join ", "
+  Write-Warning "Updater gia' attivo. PID: $otherProcessIds"
+  exit 1
+}
+
 if (!(Test-Path "live")) {
   New-Item -ItemType Directory -Path "live" | Out-Null
 }
@@ -17,7 +30,11 @@ Write-Host "Repo: $PSScriptRoot"
 $keepRunning = $true
 while ($keepRunning) {
   try {
-    $tmpFile = Join-Path $PSScriptRoot "live/latest.new.jpg"
+    $tmpFile = Join-Path $PSScriptRoot ("live/latest.{0}.new.jpg" -f $PID)
+
+    if (Test-Path $tmpFile) {
+      Remove-Item $tmpFile -Force -ErrorAction SilentlyContinue
+    }
 
     curl.exe -fsSL "$SourceUrl" -o "$tmpFile"
 

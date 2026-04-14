@@ -5,4 +5,4 @@ if not "%RUNCOUNT%"=="0" (
 	echo Updater gia' attivo nella cartella corrente.
 	exit /b 1
 )
-powershell -NoProfile -ExecutionPolicy Bypass -File ".\update-and-push.ps1" -IntervalSeconds 15
+powershell -NoProfile -ExecutionPolicy Bypass -File ".\update-and-push.ps1" -IntervalSeconds 60

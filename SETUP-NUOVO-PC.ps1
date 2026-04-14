@@ -9,13 +9,13 @@
 .PARAMETER UserEmail
   Email utente git (default: sgiorgini@users.noreply.github.com)
 .PARAMETER IntervalSeconds
-  Intervallo aggiornamento in secondi (default: 15)
+  Intervallo aggiornamento in secondi (default: 60)
 #>
 
 param(
   [string]$UserName = "sgiorgini",
   [string]$UserEmail = "sgiorgini@users.noreply.github.com",
-  [int]$IntervalSeconds = 15
+  [int]$IntervalSeconds = 60
 )
 
 $ErrorActionPreference = "Stop"

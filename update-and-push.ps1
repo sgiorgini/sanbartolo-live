@@ -1,6 +1,7 @@
 param(
   [int]$IntervalSeconds = 300,
-  [string]$SourceUrl = "http://44.3.44.133/webcapture.jpg?command=snap&channel=1"
+  [string]$SourceUrl = "http://44.3.44.133/webcapture.jpg?command=snap&channel=1",
+  [switch]$RunOnce
 )
 
 $ErrorActionPreference = "Stop"
@@ -13,7 +14,8 @@ if (!(Test-Path "live")) {
 Write-Host "Avvio update+push ogni $IntervalSeconds secondi"
 Write-Host "Repo: $PSScriptRoot"
 
-while ($true) {
+$keepRunning = $true
+while ($keepRunning) {
   try {
     $tmpFile = Join-Path $PSScriptRoot "live/latest.new.jpg"
 
@@ -29,7 +31,13 @@ while ($true) {
       Move-Item -Path "$tmpFile" -Destination "live/latest.jpg" -Force
       Copy-Item "live/latest.jpg" "latest.jpg" -Force
 
-      git add live/latest.jpg latest.jpg | Out-Null
+      $statusObject = @{
+        latest = "latest.jpg"
+        time   = (Get-Date).ToString("o")
+      }
+      $statusObject | ConvertTo-Json | Set-Content -Path "status.json" -Encoding UTF8
+
+      git add live/latest.jpg latest.jpg status.json | Out-Null
       if (-not (git diff --cached --quiet)) {
         $ts = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
         git commit -m "Update live snapshot ($ts)" | Out-Null
@@ -48,5 +56,10 @@ while ($true) {
     Write-Warning "[$ts] Errore update+push: $($_.Exception.Message)"
   }
 
-  Start-Sleep -Seconds $IntervalSeconds
+  if ($RunOnce) {
+    $keepRunning = $false
+  }
+  else {
+    Start-Sleep -Seconds $IntervalSeconds
+  }
 }

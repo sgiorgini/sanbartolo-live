@@ -31,12 +31,12 @@ Opzionale: personalizza nome utente ed email git:
 powershell -NoProfile -ExecutionPolicy Bypass -File .\SETUP-NUOVO-PC.ps1 `
   -UserName "Tuo Nome" `
   -UserEmail "tua.email@example.com" `
-  -IntervalSeconds 15
+  -IntervalSeconds 60
 ```
 
 ### 3. Verifica che il live sia attivo
 Controlla i log della console e GitHub Pages:
-- Console locale: deve mostrare "PUSH OK - snapshot aggiornato" ogni ~15 secondi
+- Console locale: deve mostrare "PUSH OK - snapshot aggiornato" ogni ~60 secondi
 - GitHub: https://github.com/sgiorgini/sanbartolo-live/commits/main deve avanzare
 - Live web: https://sgiorgini.github.io/sanbartolo-live/
 
@@ -45,7 +45,7 @@ Controlla i log della console e GitHub Pages:
 ### Avviare il loop manualmente
 ```powershell
 cd C:\sanbartolo-live
-powershell -NoProfile -ExecutionPolicy Bypass -File .\update-and-push.ps1 -IntervalSeconds 15
+powershell -NoProfile -ExecutionPolicy Bypass -File .\update-and-push.ps1 -IntervalSeconds 60
 ```
 
 ### Usare il launcher batch
@@ -75,6 +75,7 @@ Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -match 'C:\\sanbar
 - **Anti-doppio-avvio**: Il launcher batch blocca un secondo avvio se lo script è già attivo nella cartella
 - **Controllo errori**: I problemi di commit/push sono riportati esplicitamente come errori, non come successi
 - **File temporanei**: Usa nomi univoci per processo per evitare conflitti
+- **Cache GitHub Pages**: Alcune richieste possono riflettere il nuovo stato con alcuni minuti di ritardo
 
 ## FAQ
 

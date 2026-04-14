@@ -19,10 +19,10 @@ cd C:\sanbartolo-live
 powershell -NoProfile -ExecutionPolicy Bypass -File .\SETUP-NUOVO-PC.ps1
 
 Opzionale (autore personalizzato):
-powershell -NoProfile -ExecutionPolicy Bypass -File .\SETUP-NUOVO-PC.ps1 -UserName "Tuo Nome" -UserEmail "tua.email@example.com" -IntervalSeconds 15
+powershell -NoProfile -ExecutionPolicy Bypass -File .\SETUP-NUOVO-PC.ps1 -UserName "Tuo Nome" -UserEmail "tua.email@example.com" -IntervalSeconds 60
 
 3) VERIFICA CHE IL LIVE SIA ATTIVO
-- In console deve comparire: "PUSH OK - snapshot aggiornato" circa ogni 15 secondi
+- In console deve comparire: "PUSH OK - snapshot aggiornato" circa ogni 60 secondi
 - Verifica commit: https://github.com/sgiorgini/sanbartolo-live/commits/main
 - Verifica pagina live: https://sgiorgini.github.io/sanbartolo-live/
 
@@ -30,7 +30,7 @@ COMANDI UTILI
 
 Avvio manuale loop:
 cd C:\sanbartolo-live
-powershell -NoProfile -ExecutionPolicy Bypass -File .\update-and-push.ps1 -IntervalSeconds 15
+powershell -NoProfile -ExecutionPolicy Bypass -File .\update-and-push.ps1 -IntervalSeconds 60
 
 Avvio tramite batch:
 cd C:\sanbartolo-live
@@ -50,3 +50,4 @@ NOTE IMPORTANTI
 - Anti-doppio-avvio attivo: il batch blocca un secondo avvio nella stessa cartella.
 - Errori commit/push espliciti: niente falsi "PUSH OK".
 - File temporanei per processo: evita conflitti tra istanze.
+- GitHub Pages puo' mostrare ritardo lato cache (fino a circa 10 minuti su alcune richieste).

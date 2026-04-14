@@ -41,7 +41,15 @@ while ($keepRunning) {
       if (-not (git diff --cached --quiet)) {
         $ts = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
         git commit -m "Update live snapshot ($ts)" | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+          throw "Commit git fallito"
+        }
+
         git push origin main | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+          throw "Push git fallito"
+        }
+
         Write-Host "[$ts] PUSH OK - snapshot aggiornato"
       }
     }

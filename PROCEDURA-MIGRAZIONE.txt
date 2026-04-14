@@ -1,0 +1,52 @@
+MIGRAZIONE SANBARTOLO-LIVE SU NUOVO PC
+
+PREREQUISITI
+- PowerShell 5.1+
+- Git installato (la configurazione autore viene fatta anche dallo script)
+- Accesso a GitHub per il push
+
+PROCEDURA RAPIDA (3 PASSAGGI)
+
+1) TRASFERISCI LA CARTELLA
+Copia la cartella C:\sanbartolo-live dal vecchio PC al nuovo PC (stesso percorso consigliato).
+
+Esempio (se accessibile via rete):
+Copy-Item -Path "\\<vecchio-pc>\c$\sanbartolo-live" -Destination "C:\sanbartolo-live" -Recurse -Force
+
+2) CONFIGURA L'AMBIENTE LOCALE
+Apri PowerShell nel nuovo PC:
+cd C:\sanbartolo-live
+powershell -NoProfile -ExecutionPolicy Bypass -File .\SETUP-NUOVO-PC.ps1
+
+Opzionale (autore personalizzato):
+powershell -NoProfile -ExecutionPolicy Bypass -File .\SETUP-NUOVO-PC.ps1 -UserName "Tuo Nome" -UserEmail "tua.email@example.com" -IntervalSeconds 15
+
+3) VERIFICA CHE IL LIVE SIA ATTIVO
+- In console deve comparire: "PUSH OK - snapshot aggiornato" circa ogni 15 secondi
+- Verifica commit: https://github.com/sgiorgini/sanbartolo-live/commits/main
+- Verifica pagina live: https://sgiorgini.github.io/sanbartolo-live/
+
+COMANDI UTILI
+
+Avvio manuale loop:
+cd C:\sanbartolo-live
+powershell -NoProfile -ExecutionPolicy Bypass -File .\update-and-push.ps1 -IntervalSeconds 15
+
+Avvio tramite batch:
+cd C:\sanbartolo-live
+.\avvia-update-web.bat
+
+Test singolo (senza loop):
+cd C:\sanbartolo-live
+powershell -NoProfile -ExecutionPolicy Bypass -File .\update-and-push.ps1 -RunOnce
+
+Verifica processi attivi:
+Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -match 'update-and-push' }
+
+Ferma updater:
+Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -match 'C:\\sanbartolo-live\\update-and-push' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }
+
+NOTE IMPORTANTI
+- Anti-doppio-avvio attivo: il batch blocca un secondo avvio nella stessa cartella.
+- Errori commit/push espliciti: niente falsi "PUSH OK".
+- File temporanei per processo: evita conflitti tra istanze.

@@ -5,9 +5,17 @@ const imageState = document.getElementById('image-state');
 const refreshButton = document.getElementById('refresh-button');
 
 const REFRESH_INTERVAL_MS = 5000;
+const IMAGE_REFRESH_INTERVAL_MS = 3000;
 const STALE_THRESHOLD_MS = 180000;
 
 let lastSnapshotTime = null;
+let latestImageName = 'latest.jpg';
+let imageSourceIndex = 0;
+
+const imageSources = [
+  (name) => `live/${name}`,
+  (name) => `${name}`
+];
 
 function formatTime(date) {
   return date.toLocaleTimeString('it-IT', { hour12: false });
@@ -22,6 +30,16 @@ function setStatus(text, className) {
 function updateImageState(text) {
   if (!imageState) return;
   imageState.textContent = text;
+}
+
+function refreshImage() {
+  if (!liveImage) return;
+
+  const sourceBuilder = imageSources[imageSourceIndex % imageSources.length];
+  const base = sourceBuilder(latestImageName);
+  const sep = base.includes('?') ? '&' : '?';
+  const nonce = `${Date.now()}-${Math.floor(Math.random() * 100000)}`;
+  liveImage.src = `${base}${sep}ts=${nonce}`;
 }
 
 async function loadStatus() {
@@ -40,8 +58,8 @@ async function loadStatus() {
       throw new Error('status.json incompleto');
     }
 
-    const imageUrl = `live/${data.latest}?ts=${Date.now()}`;
-    liveImage.src = imageUrl;
+    latestImageName = data.latest;
+    refreshImage();
 
     const snapshotTime = new Date(data.time);
     if (Number.isNaN(snapshotTime.getTime())) {
@@ -57,6 +75,7 @@ async function loadStatus() {
     console.error(err);
     setStatus('Errore', 'status-error');
     updateImageState(`Impossibile leggere status.json`);
+    refreshImage();
   }
 }
 
@@ -78,11 +97,13 @@ if (refreshButton) {
 
 if (liveImage) {
   liveImage.addEventListener('error', () => {
-    setStatus('Errore', 'status-error');
-    updateImageState('Impossibile caricare il file immagine');
+    imageSourceIndex += 1;
+    refreshImage();
   });
 }
 
+refreshImage();
 loadStatus();
 setInterval(loadStatus, REFRESH_INTERVAL_MS);
+setInterval(refreshImage, IMAGE_REFRESH_INTERVAL_MS);
 setInterval(checkStale, 10000);
